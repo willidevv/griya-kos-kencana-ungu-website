@@ -1,0 +1,24 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('galleries', function (Blueprint $table) {
+            $table->id();
+            $table->string('image');    // Nama file gambar
+            $table->string('caption');  // Keterangan foto
+            $table->boolean('is_visible')->default(true); // Status tampil/sembunyi
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('galleries');
+    }
+};
