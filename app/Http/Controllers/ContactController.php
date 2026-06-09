@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Contact;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ContactController extends Controller
 {
@@ -31,6 +32,7 @@ class ContactController extends Controller
             [
                 'phone' => $request->phone,
                 'maps_iframe' => $request->maps_iframe,
+                'users_id' => Auth::id(), // ✅ WAJIB ADA
             ]
         );
 

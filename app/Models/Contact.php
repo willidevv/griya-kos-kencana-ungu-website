@@ -10,6 +10,8 @@ class Contact extends Model
     protected $fillable = [
         'id', 
         'phone', 
-        'maps_iframe'
+        'maps_iframe',
+        'users_id'
+
     ];
 }

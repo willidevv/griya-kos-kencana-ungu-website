@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - Griya Kost</title>
+    <title>@yield('title') - Admin Panel Griya Kost</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
@@ -40,6 +40,15 @@
             <a href="{{ route('admin.kontak') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl transition {{ Request::is('admin/kontak') ? 'bg-purple-600 text-white shadow-lg' : 'hover:bg-slate-800' }}">
                 <i data-lucide="phone" class="w-5 h-5"></i> Kontak
             </a>
+
+            {{-- MENU KHUSUS SUPER ADMIN --}}
+            @if(Auth::user()->role === 'super_admin')
+            <div class="pt-6 pb-2 px-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-t border-slate-800 mt-4">Manajemen Sistem</div>
+            
+            <a href="{{ route('admin.users.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl transition {{ Request::is('admin/users*') ? 'bg-indigo-600 text-white shadow-lg' : 'hover:bg-slate-800' }}">
+                <i data-lucide="users" class="w-5 h-5"></i> Kelola Admin
+            </a>
+            @endif
         </nav>
 
         <div class="p-4 border-t border-slate-800">
@@ -63,10 +72,18 @@
 
             <div class="flex items-center gap-3">
                 <div class="text-right hidden sm:block">
-                    <p class="text-xs font-bold text-gray-800">Fauzan Fathin</p>
-                    <p class="text-[10px] text-gray-500">Super Admin</p>
+                    <p class="text-xs font-bold text-gray-800">{{ Auth::user()->name }}</p>
+                    {{-- Role Badge Dinamis --}}
+                    @if(Auth::user()->role === 'super_admin')
+                        <p class="text-[9px] bg-purple-100 text-purple-600 px-1.5 py-0.5 rounded font-black uppercase tracking-tighter">Super Admin</p>
+                    @else
+                        <p class="text-[9px] bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded font-black uppercase tracking-tighter">Admin</p>
+                    @endif
                 </div>
-                <div class="w-9 h-9 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center font-bold border border-purple-200">F</div>
+                
+                <div class="w-9 h-9 {{ Auth::user()->role === 'super_admin' ? 'bg-purple-600 text-white' : 'bg-blue-100 text-blue-600' }} rounded-full flex items-center justify-center font-bold border border-gray-100 shadow-sm">
+                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                </div>
             </div>
         </header>
 

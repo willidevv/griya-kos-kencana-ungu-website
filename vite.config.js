@@ -10,13 +10,5 @@ export default defineConfig({
         }),
         tailwindcss(),
     ],
-
-    server: {
-        host: '0.0.0.0', // supaya bisa diakses dari device lain
-        port: 5173,      // port vite (default)
-        strictPort: true,
-        hmr: {
-            host: '10.70.2.151', // IP laptop kamu
-        },
-    },
+    // Blok server kita hapus total karena hanya untuk lokal/development!
 })

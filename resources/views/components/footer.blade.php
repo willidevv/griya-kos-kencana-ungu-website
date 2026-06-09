@@ -13,14 +13,7 @@
         Solusi hunian modern yang mengutamakan kenyamanan, keamanan, dan lokasi strategis di pusat kota Madiun. Fasilitas premium dengan rasa kekeluargaan.
       </p>
 
-      <div class="flex gap-4 pt-2">
-        <a href="#" class="p-2 bg-gray-800 rounded-lg hover:bg-purple-600 hover:text-white transition">
-            <i data-lucide="instagram" class="w-5 h-5"></i>
-        </a>
-        <a href="#" class="p-2 bg-gray-800 rounded-lg hover:bg-purple-600 hover:text-white transition">
-            <i data-lucide="facebook" class="w-5 h-5"></i>
-        </a>
-      </div>
+
     </div>
 
     {{-- Menu --}}

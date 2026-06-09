@@ -13,37 +13,48 @@
         </div>
 
         <div class="bg-white p-8 rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100">
-            <form action="{{ route('login') }}" method="POST" class="space-y-6">
+            <form action="{{ route('login') }}" method="POST" class="space-y-6" autocomplete="off">
                 @csrf
 
                 <div>
-                    <label for="email" class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2 ml-1">Alamat Email</label>
+                    <label for="email" class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2 ml-1">
+                        Alamat Email 
+                    </label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
                             <i data-lucide="mail" class="w-5 h-5"></i>
                         </div>
-                        <input type="email" name="email" id="email" required
+                        {{-- Tambahkan maxlength="30" sesuai database --}}
+                        <input type="email" name="email" id="email" required maxlength="30"
                             class="block w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition duration-200 outline-none"
-                            placeholder="Email">
+                            placeholder="Email"
+                            value="{{ old('email') }}">
                     </div>
                     @error('email')
-                        <p class="text-red-500 text-xs mt-2 ml-1">{{ $message }}</p>
+                        <p class="text-red-500 text-[10px] mt-2 ml-1 font-bold italic">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <div>
                     <div class="flex justify-between items-center mb-2 ml-1">
-                        <label for="password" class="block text-xs font-bold text-gray-700 uppercase tracking-wider">Kata Sandi</label>
+                        <label for="password" class="block text-xs font-bold text-gray-700 uppercase tracking-wider">
+                            Kata Sandi 
+                        </label>
                         <a href="#" class="text-xs font-semibold text-purple-600 hover:text-purple-700">Lupa sandi?</a>
                     </div>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
                             <i data-lucide="lock" class="w-5 h-5"></i>
                         </div>
-                        <input type="password" name="password" id="password" required
+                        {{-- Tambahkan maxlength="60" sesuai database --}}
+                        <input type="password" name="password" id="password" required maxlength="60"
+                            autocomplete="new-password"
                             class="block w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition duration-200 outline-none"
-                            placeholder="••••••••">
+                            placeholder="Masukkan kata sandi">
                     </div>
+                    @error('password')
+                        <p class="text-red-500 text-[10px] mt-2 ml-1 font-bold italic">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div class="flex items-center ml-1">

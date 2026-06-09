@@ -10,6 +10,7 @@ class Gallery extends Model
     protected $fillable = [
         'image',
         'caption',
-        'is_visible'
+        'is_visible',
+        'users_id'
     ];
 }

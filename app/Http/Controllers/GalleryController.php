@@ -4,11 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Gallery;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage; // Penting untuk hapus file
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class GalleryController extends Controller
 {
-    // 1. HALAMAN DAFTAR (ADMIN) - Ini yang tadinya hilang
+    // 1. HALAMAN DAFTAR (ADMIN)
     public function index()
     {
         $galleries = Gallery::latest()->get();
@@ -30,12 +31,17 @@ class GalleryController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('gallery', 'public');
+            $file = $request->file('image');
+            $extension = $file->getClientOriginalExtension();
+            $shortName = substr(uniqid(), -5) . '.' . $extension;
+
+            $imagePath = $file->storeAs('gallery', $shortName, 'public');
 
             Gallery::create([
                 'image' => $imagePath,
                 'caption' => $request->caption,
-                'is_visible' => true, // Default tampil
+                'is_visible' => true,
+                'users_id' => Auth::id(),
             ]);
 
             return redirect()->route('admin.galeri.index')->with('success', 'Foto berhasil diunggah!');
@@ -44,19 +50,60 @@ class GalleryController extends Controller
         return back()->with('error', 'Gagal mengunggah foto.');
     }
 
-    // 4. PROSES HAPUS (ADMIN)
-    public function destroy(Gallery $gallery)
+    // 4. HALAMAN FORM EDIT (ADMIN)
+    // Gunakan variabel $galeri (sesuai nama parameter di route)
+    public function edit(Gallery $galeri)
     {
-        // Hapus file fisik dari storage agar tidak menumpuk
-        if ($gallery->image) {
-            Storage::disk('public')->delete($gallery->image);
+        // Kita kirim ke view dengan nama 'gallery' agar tidak merusak variabel yang sudah ada di file Blade Anda
+        return view('admin.galeri.edit', ['gallery' => $galeri]);
+    }
+
+    // 5. PROSES UPDATE (ADMIN)
+    public function update(Request $request, Gallery $galeri)
+    {
+        $request->validate([
+            'caption' => 'required|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        // Cek jika ada upload foto baru
+        if ($request->hasFile('image')) {
+            // Hapus foto lama
+            if ($galeri->image && Storage::disk('public')->exists($galeri->image)) {
+                Storage::disk('public')->delete($galeri->image);
+            }
+
+            // Simpan foto baru
+            $file = $request->file('image');
+            $extension = $file->getClientOriginalExtension();
+            $shortName = substr(uniqid(), -5) . '.' . $extension;
+            $newPath = $file->storeAs('gallery', $shortName, 'public');
+            
+            // Masukkan path baru ke array update
+            $galeri->image = $newPath;
         }
 
-        $gallery->delete();
+        $galeri->update([
+            'caption' => $request->caption,
+            'image' => $galeri->image,
+            'is_visible' => $request->has('is_visible'),
+        ]);
+
+        return redirect()->route('admin.galeri.index')->with('success', 'Data galeri berhasil diperbarui!');
+    }
+
+    // 6. PROSES HAPUS (ADMIN)
+    public function destroy(Gallery $galeri)
+    {
+        if ($galeri->image && Storage::disk('public')->exists($galeri->image)) {
+            Storage::disk('public')->delete($galeri->image);
+        }
+
+        $galeri->delete();
         return back()->with('success', 'Foto berhasil dihapus!');
     }
 
-    // 5. HALAMAN PUBLIK (PENGUNJUNG)
+    // 7. HALAMAN PUBLIK (PENGUNJUNG)
     public function publicIndex()
     {
         $galleries = Gallery::where('is_visible', true)->latest()->get();

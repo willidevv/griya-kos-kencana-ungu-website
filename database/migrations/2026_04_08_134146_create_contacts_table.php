@@ -13,8 +13,15 @@ return new class extends Migration
     {
         Schema::create('contacts', function (Blueprint $table) {
             $table->id();
-            $table->string('phone');
+
+            // Nomor telepon biasanya berkisar antara 10-15 karakter. 
+            // 20 karakter sudah sangat aman untuk format internasional (+62...).
+            $table->string('phone', 13);
+
+            // Maps Iframe menggunakan text karena string iframe dari Google Maps 
+            // sangat panjang dan bisa mencapai ribuan karakter.
             $table->text('maps_iframe');
+
             $table->timestamps();
         });
     }

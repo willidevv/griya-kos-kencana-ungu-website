@@ -3,9 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GalleryController;
-use App\Http\Controllers\RoomTypeController;
+use App\Http\Controllers\FasilitasController;
 use App\Http\Controllers\ContactController;
-// IMPORT DASHBOARD CONTROLLER BARU
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\Admin\DashboardController;
 
 /*
@@ -17,7 +17,7 @@ Route::view('/', 'index')->name('home');
 Route::view('/profile', 'pages.profile')->name('profile');
 Route::view('/denah', 'pages.denah')->name('denah');
 
-Route::get('/fasilitas', [RoomTypeController::class, 'publicIndex'])->name('fasilitas');
+Route::get('/fasilitas', [FasilitasController::class, 'publicIndex'])->name('fasilitas');
 Route::get('/galeri', [GalleryController::class, 'publicIndex'])->name('galeri');
 Route::get('/kontak', [ContactController::class, 'publicIndex'])->name('kontak');
 
@@ -36,28 +36,34 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 |--------------------------------------------------------------------------
 */
 Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
-    
-    // DASHBOARD SEKARANG MENGGUNAKAN GET (DINAMIS)
+
+    Route::get('/', function () {
+        return redirect()->route('admin.dashboard');
+    });
+
+    // --- Dashboard ---
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    
     Route::view('/beranda', 'admin.beranda')->name('beranda');
     Route::view('/profile', 'admin.profile')->name('profile');
 
-    // --- Manajemen Fasilitas & Tipe Kamar ---
-    Route::get('/fasilitas', [RoomTypeController::class, 'adminIndex'])->name('fasilitas.index');
-    Route::get('/fasilitas/create', [RoomTypeController::class, 'create'])->name('fasilitas.create');
-    Route::post('/fasilitas/store', [RoomTypeController::class, 'store'])->name('fasilitas.store');
-    Route::get('/fasilitas/{room}/edit', [RoomTypeController::class, 'edit'])->name('fasilitas.edit');
-    Route::put('/fasilitas/{room}', [RoomTypeController::class, 'update'])->name('fasilitas.update');
-    Route::delete('/fasilitas/{room}', [RoomTypeController::class, 'destroy'])->name('fasilitas.destroy');
+    // --- Manajemen Fasilitas ---
+    Route::resource('fasilitas', FasilitasController::class)->except(['show']);
 
     // --- Manajemen Galeri ---
-    Route::get('/galeri', [GalleryController::class, 'index'])->name('galeri.index');
-    Route::get('/galeri/create', [GalleryController::class, 'create'])->name('galeri.create');
-    Route::post('/galeri/store', [GalleryController::class, 'store'])->name('galeri.store');
-    Route::delete('/galeri/{gallery}', [GalleryController::class, 'destroy'])->name('galeri.destroy');
+    Route::resource('galeri', GalleryController::class)->except(['show']);
 
     // --- Manajemen Kontak ---
     Route::get('/kontak', [ContactController::class, 'adminIndex'])->name('kontak');
     Route::post('/kontak/update', [ContactController::class, 'update'])->name('kontak.update');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Super Admin Only Routes
+    |--------------------------------------------------------------------------
+    */
+    Route::middleware('can:super-admin-only')->group(function () {
+        Route::patch('/users/{id}/toggle', [UserController::class, 'toggleStatus'])->name('users.toggle');
+        Route::resource('users', UserController::class)->except(['show']);
+    });
+
 });

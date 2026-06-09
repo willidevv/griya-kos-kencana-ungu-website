@@ -5,6 +5,7 @@
 @section('admin_content')
 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
     <div>
+        <h2 class="text-xl font-bold text-gray-800">Koleksi Galeri</h2>
         <p class="text-gray-500 text-sm">Total koleksi: <span class="font-bold text-gray-800">{{ $galleries->count() }} Foto</span></p>
     </div>
     <a href="{{ route('admin.galeri.create') }}" class="bg-purple-600 text-white px-6 py-3 rounded-2xl font-bold flex items-center gap-2 hover:bg-purple-700 shadow-lg shadow-purple-200 transition">
@@ -12,6 +13,7 @@
     </a>
 </div>
 
+{{-- Alert Sukses --}}
 @if(session('success'))
 <div class="mb-6 p-4 bg-green-50 border border-green-100 text-green-700 rounded-2xl text-sm font-medium flex items-center gap-3">
     <i data-lucide="check-circle" class="w-5 h-5"></i> {{ session('success') }}
@@ -32,13 +34,20 @@
             <tbody class="divide-y divide-gray-50">
                 @forelse($galleries as $item)
                 <tr class="hover:bg-gray-50/50 transition">
+                    {{-- Preview Gambar --}}
                     <td class="px-6 py-4">
-                        <img src="{{ asset('storage/' . $item->image) }}" class="w-24 h-16 object-cover rounded-xl border border-gray-200 shadow-sm">
+                        <img src="{{ asset('storage/' . $item->image) }}" class="w-24 h-16 object-cover rounded-xl border border-gray-200 shadow-sm bg-gray-100">
                     </td>
+
+                    {{-- Detail Keterangan --}}
                     <td class="px-6 py-4">
                         <p class="font-bold text-gray-800 text-sm">{{ $item->caption }}</p>
-                        <p class="text-[10px] text-gray-400 mt-0.5 italic">ID: #{{ $item->id }} | {{ $item->created_at->diffForHumans() }}</p>
+                        <p class="text-[10px] text-gray-400 mt-0.5 italic">
+                            ID: #{{ $item->id }} | {{ $item->created_at->diffForHumans() }}
+                        </p>
                     </td>
+
+                    {{-- Status Visibility --}}
                     <td class="px-6 py-4">
                         @if($item->is_visible)
                             <span class="px-3 py-1 bg-green-100 text-green-600 text-[10px] font-bold rounded-full uppercase tracking-tight">Tampil</span>
@@ -46,14 +55,26 @@
                             <span class="px-3 py-1 bg-gray-100 text-gray-500 text-[10px] font-bold rounded-full uppercase tracking-tight">Sembunyi</span>
                         @endif
                     </td>
-                    <td class="px-6 py-4 text-right">
-                        <form action="{{ route('admin.galeri.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus foto ini?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="p-2.5 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition shadow-sm">
-                                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                            </button>
-                        </form>
+
+                    {{-- Tombol Aksi --}}
+                    <td class="px-6 py-4">
+                        <div class="flex justify-end gap-2">
+                            {{-- Button Edit --}}
+                            <a href="{{ route('admin.galeri.edit', $item->id) }}" 
+                               class="p-2.5 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-100 transition shadow-sm"
+                               title="Edit Foto">
+                                <i data-lucide="edit-3" class="w-4 h-4"></i>
+                            </a>
+
+                            {{-- Button Hapus --}}
+                            <form action="{{ route('admin.galeri.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus foto ini?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="p-2.5 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition shadow-sm" title="Hapus Foto">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 @empty

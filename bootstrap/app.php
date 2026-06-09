@@ -11,7 +11,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // --- TAMBAHKAN KODE DI BAWAH INI ---
+        $middleware->redirectTo(
+            guests: '/login',             // Tujuan jika user BELUM login tapi akses halaman terproteksi
+            users: '/admin/dashboard'     // Tujuan jika user SUDAH login tapi akses halaman 'guest' (login)
+        );
+        // ----------------------------------
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
